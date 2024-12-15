@@ -1,6 +1,23 @@
-const express = require('express');
+import express from 'express';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 const app = express();
-const port = 3000;
+dotenv.config();
+
+mongoose
+    .connect(process.env.MONGO)
+    .then(() => {
+        console.log('Database is connected');
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+const port = process.env.PORT || 7820;
+
+app.use(express.json());
+app.use(cookieParser());
 
 // Route mặc định
 app.get('/', (req, res) => {
