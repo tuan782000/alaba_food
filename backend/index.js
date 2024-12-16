@@ -2,7 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
-import { loggingMiddleware } from './middlewares/index.js';
+import authRouter from './routes/auth.route.js';
+import loggingMiddleware from './middlewares/logInfo.middleware.js';
 const app = express();
 dotenv.config();
 
@@ -15,7 +16,7 @@ mongoose
         console.log(err);
     });
 
-const port = process.env.PORT || 7820;
+const port = process.env.PORT || 9000;
 
 // sử dụng middleware bắt các request gửi lên
 app.use(loggingMiddleware);
@@ -27,6 +28,8 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
     res.send('Hello, Express!');
 });
+
+app.use('/api/auth', authRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

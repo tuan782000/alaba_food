@@ -14,18 +14,23 @@ const user = new mongoose.Schema(
         password: {
             type: String,
             require: true
+            // select: false
         },
         phone: {
-            type: String
+            type: String,
+            default: ''
         },
         address: {
-            type: String
+            type: String,
+            default: ''
         },
         account_type: {
-            type: String
+            type: String,
+            default: 'Local'
         },
         role: {
-            type: String
+            type: String,
+            default: 'User'
         },
         is_active: {
             type: Boolean, // Thay kiểu String bằng Boolean cho đúng
@@ -35,10 +40,20 @@ const user = new mongoose.Schema(
             type: String
         },
         code_expired: {
-            type: Date
+            type: Date // sẽ tính tới phương án + 5min
         },
         refresh_token: {
-            type: String
+            type: String,
+            default: 'refresh token string'
+        },
+        isDeleted: {
+            type: Boolean, // Thêm cờ để đánh dấu bản ghi đã bị xoá mềm
+            default: false // Mặc định là chưa xoá
+        },
+        profilePicture: {
+            type: String,
+            default:
+                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
         }
     },
     {
