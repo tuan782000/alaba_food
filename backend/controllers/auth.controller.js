@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
 import errorHandler from '../utils/error.js';
 import User from '../models/user.model.js';
-import jwt from 'jsonwebtoken';
 import generateOtp from '../utils/generateOtp.js';
 import sendMail from '../utils/sendEmail.js';
+import generateToken from '../utils/generateToken.js';
+import jwt from 'jsonwebtoken';
 
 const signUp = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -170,26 +171,53 @@ const signIn = async (req, res, next) => {
             return next(errorHandler(400, 'Email or password is not correct'));
         }
 
-        const { password: pass, ...rest } = validUser._doc;
+        // Tạo payload cho token
+        const payload = {
+            id: validUser._id,
+            email: validUser.email,
+            role: validUser.role
+        };
 
-        // ký token - cung cấp cho coookie phía client
-        // const token = jwt.sign(
-        //     {},
-        //     process.env.SECRET_KEY,
-        //     {
-        //         expiresIn: '10d'
-        //     }
-        // );
+        // Tạo access_token và refresh_token
+        const access_token = generateToken(
+            payload,
+            process.env.SECRET_KEY, // Sử dụng SECRET_KEY trong .env
+            process.env.EXP_IN_ACCESS_TOKEN // Thời hạn access_token, ví dụ: '1h'
+        );
 
-        res.status(200).json(rest);
+        const refresh_token = generateToken(
+            payload,
+            process.env.SECRET_KEY, // Có thể dùng SECRET_KEY hoặc một key riêng cho refresh_token
+            process.env.EXP_IN_REFRESH_TOKEN // Thời hạn refresh_token, ví dụ: '1d'
+        );
+
+        // cập nhật refresh_token cho db
+        validUser.refresh_token = refresh_token;
+        await validUser.save();
+
+        // Cấu hình cookie
+        res.cookie('access_token', access_token, {
+            httpOnly: true, // Chỉ có thể truy cập qua HTTP (không thể bị lấy qua JavaScript)
+            secure: process.env.NODE_ENV === 'production', // Chỉ gửi qua HTTPS trong môi trường production
+            sameSite: 'strict', // Bảo vệ chống CSRF
+            maxAge: 60 * 60 * 1000 // 1 giờ (tương ứng với EXP_IN_ACCESS_TOKEN)
+        });
+
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày (tương ứng với EXP_IN_REFRESH_TOKEN)
+        });
+
+        return res.status(200).json({
+            message: 'Sign in successful',
+            access_token,
+            refresh_token
+        });
     } catch (error) {
         return next(error);
     }
-};
-
-const generateToken = async payload => {
-    const access_token = await jwt.sign(payload);
-    const refresh_token = await jwt.sign(payload);
 };
 
 const google = async (req, res, next) => {};
