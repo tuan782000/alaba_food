@@ -27,6 +27,12 @@ const signUp = async (req, res, next) => {
             return next(errorHandler(409, 'Email already exists'));
         }
 
+        if (password.includes(' ')) {
+            return next(
+                errorHandler(400, 'Password can not contains spaces!!!')
+            );
+        }
+
         const hashedPassword = bcrypt.hashSync(password, 10);
 
         const code_id = generateOtp();
