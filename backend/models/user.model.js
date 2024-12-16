@@ -40,7 +40,7 @@ const user = new mongoose.Schema(
             type: String
         },
         code_expired: {
-            type: Date // sẽ tính tới phương án + 5min
+            type: Date // sẽ tính tới phương án + 15 min
         },
         refresh_token: {
             type: String,

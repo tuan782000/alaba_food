@@ -30,7 +30,7 @@ const signUp = async (req, res, next) => {
         const hashedPassword = bcrypt.hashSync(password, 10);
 
         const code_id = generateOtp();
-        const code_expired = Date.now() + 5 * 60 * 1000; // Add 5 minutes in milliseconds
+        const code_expired = Date.now() + 15 * 60 * 1000; // Add 15 minutes in milliseconds
 
         const newUser = new User({
             name,
@@ -48,7 +48,7 @@ const signUp = async (req, res, next) => {
             <p>Hi <strong>${name}</strong>,</p>
             <p>Thank you for signing up for Alaba Food!</p>
             <p>Your verification code is: <strong>${code_id}</strong></p>
-            <p>This code will expire in 5 minutes.</p>
+            <p>This code will expire in 15 minutes.</p>
         `;
 
         await sendMail(email, emailSubject, emailText, emailHtml);
@@ -124,7 +124,7 @@ const resendCode = async (req, res, next) => {
 
         // Tạo mã code mới và thời gian hết hạn
         const code_id = generateOtp();
-        const code_expired = Date.now() + 5 * 60 * 1000; // 5 minutes
+        const code_expired = Date.now() + 15 * 60 * 1000; // 15 minutes
 
         user.code_id = code_id;
         user.code_expired = code_expired;
@@ -136,7 +136,7 @@ const resendCode = async (req, res, next) => {
         const emailHtml = `
             <p>Hi <strong>${user.name}</strong>,</p>
             <p>Here is your new verification code: <strong>${code_id}</strong></p>
-            <p>This code will expire in 5 minutes.</p>
+            <p>This code will expire in 15 minutes.</p>
         `;
 
         await sendMail(email, emailSubject, emailText, emailHtml);
@@ -163,6 +163,17 @@ const signIn = async (req, res, next) => {
 
         if (!validUser) {
             return next(errorHandler(409, 'Email or password is not correct'));
+        }
+
+        // Kiểm tra xem tài khoản đã kích hoạt hay chưa
+        // UI 1 màn hình có ô email - kèm các ô input nhập otp
+        if (!validUser.is_active) {
+            return next(
+                errorHandler(
+                    409,
+                    'Account is not active. Please verify your email.'
+                )
+            );
         }
 
         const validPassword = bcrypt.compareSync(password, validUser.password);
@@ -220,6 +231,66 @@ const signIn = async (req, res, next) => {
     }
 };
 
+// khi access_token hết hạn, mình trích xuất trong cookies ra gửi refresh_token lên
+// đem so sánh refresh_token gửi lên với refresh_token trong db xem 2 cái giống nhau hay không
+// nếu giống thì cấp 1 access_token mới - trả về cho client - lưu vào cookie
+// còn khi cả 2 cùng nhau hết hạn thì bắt login lại từ đầu
+const refreshToken = async (req, res, next) => {
+    try {
+        const { refresh_token } = req.cookies;
+
+        if (!refresh_token) {
+            return next(errorHandler(401, 'Refresh token is required'));
+        }
+
+        // Xác minh refresh_token
+        const decoded = jwt.verify(refresh_token, process.env.SECRET_KEY);
+
+        // Tìm người dùng dựa trên decoded id
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return next(errorHandler(404, 'User not found'));
+        }
+
+        // So sánh refresh_token từ cookie với refresh_token trong DB
+        if (user.refresh_token !== refresh_token) {
+            return next(errorHandler(403, 'Invalid refresh token'));
+        }
+
+        // Tạo access_token mới
+        const payload = { id: user._id, email: user.email, role: user.role };
+        const access_token = generateToken(
+            payload,
+            process.env.SECRET_KEY,
+            process.env.EXP_IN_ACCESS_TOKEN // Ví dụ: '1h'
+        );
+
+        // Cập nhật cookie
+        res.cookie('access_token', access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 1000 // 1 giờ (thời hạn của access_token)
+        });
+
+        return res.status(200).json({
+            message: 'New access token generated successfully',
+            access_token
+        });
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return next(
+                errorHandler(
+                    403,
+                    'Refresh token expired. Please sign in again.'
+                )
+            );
+        }
+        return next(error);
+    }
+};
+
 const google = async (req, res, next) => {};
 
-export { signUp, signIn, google, verifyCode, resendCode };
+export { signUp, signIn, google, verifyCode, resendCode, refreshToken };
