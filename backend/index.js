@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import loggingMiddleware from './middlewares/logInfo.middleware.js';
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
+import restaurantRouter from './routes/restaurant.route.js';
 const app = express();
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/restaurant', restaurantRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

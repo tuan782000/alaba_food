@@ -20,17 +20,33 @@ const signUp = async (req, res, next) => {
         return next(errorHandler(400, 'All fileds are required'));
     }
 
+    // bắt validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return next(errorHandler(400, 'Invalid email format!!!'));
+    }
+
+    if (name.length <= 2 || name.length >= 50) {
+        return next(
+            errorHandler(400, 'Name must be between 2 and 50 characters!!!')
+        );
+    }
+
+    if (password.length <= 6 || password.length >= 20) {
+        return next(
+            errorHandler(400, 'Password must be between 6 and 20 characters!!!')
+        );
+    }
+
+    if (password.includes(' ')) {
+        return next(errorHandler(400, 'Password can not contains spaces!!!'));
+    }
+
     try {
         const checkEmail = await User.findOne({ email });
 
         if (checkEmail) {
             return next(errorHandler(409, 'Email already exists'));
-        }
-
-        if (password.includes(' ')) {
-            return next(
-                errorHandler(400, 'Password can not contains spaces!!!')
-            );
         }
 
         const hashedPassword = bcrypt.hashSync(password, 10);
@@ -300,3 +316,7 @@ const refreshToken = async (req, res, next) => {
 const google = async (req, res, next) => {};
 
 export { signUp, signIn, google, verifyCode, resendCode, refreshToken };
+
+// Đăng nhập với google
+// viết chức năng upload ảnh - trả về 1 link url => lưu database
+// upload nhiều ảnh - trả về nhiều link url => lưu database

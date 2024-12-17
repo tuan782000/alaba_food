@@ -2,25 +2,35 @@ import mongoose from 'mongoose';
 
 const restaurantSchema = new mongoose.Schema(
     {
-        order_id: {
-            type: mongoose.Schema.Types.ObjectId, // Liên kết với Order
-            ref: 'Order'
+        name: {
+            type: String
         },
-        restaurant_id: {
-            type: mongoose.Schema.Types.ObjectId, // Liên kết với Restaurant
-            ref: 'Restaurant'
+        address: {
+            type: String,
+            default: ''
         },
-        menu_id: {
-            type: mongoose.Schema.Types.ObjectId, // Liên kết với Menu
-            ref: 'Menu'
+        phone: {
+            type: String,
+            default: ''
         },
-        menu_item_id: {
-            type: mongoose.Schema.Types.ObjectId, // Liên kết với MenuItem
-            ref: 'MenuItem'
+        email: {
+            type: String,
+            default: ''
         },
-        menu_item_option_id: {
-            type: mongoose.Schema.Types.ObjectId, // Liên kết với MenuItemOption
-            ref: 'MenuItemOption'
+        rating: {
+            type: Number,
+            default: 0,
+            min: [0, 'Rating cannot be less than 0'], // Giá trị nhỏ nhất
+            max: [5, 'Rating cannot be greater than 5'] // Giá trị lớn nhất
+        },
+        image: {
+            type: String,
+            default:
+                'https://thumbs.dreamstime.com/b/opening-soon-banner-opening-soon-vector-red-banner-ith-speaker-sapes-background-modern-design-123504690.jpg'
+        },
+        is_deleted: {
+            type: Boolean,
+            default: false
         }
     },
     {
