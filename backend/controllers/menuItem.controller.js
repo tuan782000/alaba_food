@@ -1,6 +1,7 @@
 import MenuItem from '../models/menuItem.model.js';
 import Menu from '../models/menu.model.js';
 import mongoose from 'mongoose';
+import errorHandler from '../utils/error.js';
 
 const createMenuItem = async (req, res, next) => {
     const { menu_id, title, description, base_price, images } = req.body;

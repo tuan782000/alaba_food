@@ -8,6 +8,7 @@ import userRouter from './routes/user.route.js';
 import restaurantRouter from './routes/restaurant.route.js';
 import menuRouter from './routes/menu.route.js';
 import menuItemRouter from './routes/menuItem.route.js';
+import menuItemOptionRouter from './routes/menuItemOption.route.js';
 const app = express();
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/user', userRouter);
 app.use('/api/restaurant', restaurantRouter);
 app.use('/api/menu', menuRouter);
 app.use('/api/menu-item', menuItemRouter);
+app.use('/api/menu-item-option', menuItemOptionRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
