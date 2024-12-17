@@ -7,6 +7,7 @@ import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import restaurantRouter from './routes/restaurant.route.js';
 import menuRouter from './routes/menu.route.js';
+import menuItemRouter from './routes/menuItem.route.js';
 const app = express();
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/restaurant', restaurantRouter);
 app.use('/api/menu', menuRouter);
+app.use('/api/menu-item', menuItemRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
