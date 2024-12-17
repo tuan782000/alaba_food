@@ -320,3 +320,5 @@ export { signUp, signIn, google, verifyCode, resendCode, refreshToken };
 // Đăng nhập với google
 // viết chức năng upload ảnh - trả về 1 link url => lưu database
 // upload nhiều ảnh - trả về nhiều link url => lưu database
+
+// Ở các bảng lá như menu menuItem sẽ có các thông tin phụ thuộc vào restaurant - khi xoá restaurant đi - phải viết thêm các query xoá kèm
