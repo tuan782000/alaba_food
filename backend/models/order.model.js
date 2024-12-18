@@ -11,7 +11,8 @@ const orderSchema = new mongoose.Schema(
             ref: 'Restaurant'
         },
         total_price: {
-            type: Number
+            type: Number,
+            default: 0
         },
         status: {
             type: String,
@@ -24,6 +25,10 @@ const orderSchema = new mongoose.Schema(
         },
         delivery_time: {
             type: Date
+        },
+        is_deleted: {
+            type: Boolean,
+            default: false
         }
     },
     {

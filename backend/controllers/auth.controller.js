@@ -322,3 +322,6 @@ export { signUp, signIn, google, verifyCode, resendCode, refreshToken };
 // upload nhiều ảnh - trả về nhiều link url => lưu database
 
 // Ở các bảng lá như menu menuItem sẽ có các thông tin phụ thuộc vào restaurant - khi xoá restaurant đi - phải viết thêm các query xoá kèm
+
+// Nhấn order ở client -> sẽ call đến api orderDetailController để tạo ra đơn hàng
+// order chỉ chứa thông tin chính kiểm soát đơn hàng đó

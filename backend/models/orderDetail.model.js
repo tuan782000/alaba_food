@@ -18,9 +18,24 @@ const orderDetailSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId, // Liên kết với MenuItem
             ref: 'MenuItem'
         },
-        menu_item_option_id: {
-            type: mongoose.Schema.Types.ObjectId, // Liên kết với MenuItemOption
-            ref: 'MenuItemOption'
+        menu_item_option_ids: [
+            {
+                type: mongoose.Schema.Types.ObjectId, // Liên kết với MenuItemOption
+                ref: 'MenuItemOption'
+            }
+        ],
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1 // Số lượng ít nhất là 1
+        },
+        price: {
+            type: Number,
+            required: true // Giá đã tính toán (base price + options price) * quantity
+        },
+        is_deleted: {
+            type: Boolean,
+            default: false
         }
     },
     {
