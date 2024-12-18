@@ -2,7 +2,7 @@ import Restaurant from '../models/restaurant.model.js';
 import errorHandler from '../utils/error.js';
 
 const createRestaurant = async (req, res, next) => {
-    const { name, address, phone, email } = req.body;
+    const { name, address, phone, email, image } = req.body;
 
     if (name.length <= 2 || name.length >= 50) {
         return next(
@@ -29,7 +29,13 @@ const createRestaurant = async (req, res, next) => {
     }
 
     try {
-        const newRestaurant = new Restaurant({ name, address, phone, email });
+        const newRestaurant = new Restaurant({
+            name,
+            address,
+            phone,
+            email,
+            image
+        });
         const savedRestaurant = await newRestaurant.save();
         res.status(201).json(savedRestaurant);
     } catch (error) {

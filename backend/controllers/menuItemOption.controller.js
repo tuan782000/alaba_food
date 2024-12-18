@@ -11,7 +11,7 @@ const createMenuItemOption = async (req, res, next) => {
         title,
         additional_price,
         optional_description,
-        images
+        image
     } = req.body;
 
     if (!menu_item_id || !title) {
@@ -34,7 +34,7 @@ const createMenuItemOption = async (req, res, next) => {
             title,
             additional_price,
             optional_description,
-            images
+            image
         });
 
         const savedMenuItemOption = await newMenuItemOption.save();

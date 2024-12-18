@@ -87,8 +87,63 @@ const updateUser = async (req, res, next) => {
                 errorHandler(400, 'Password must be at least 6 characters!!!')
             );
         }
+
+        if (updateData.password.includes(' ')) {
+            return next(
+                errorHandler(400, 'Password can not contains spaces!!!')
+            );
+        }
+
         updateData.password = bcryptjs.hashSync(updateData.password, 10);
     }
+
+    if (updateData.name) {
+        if (updateData.name.length < 2 || updateData.name.length > 20) {
+            return next(
+                errorHandler(400, 'Name must be between 3 and 20 characters!!!')
+            );
+        }
+
+        if (!updateData.name.match(/^[a-zA-Z0-9]+$/)) {
+            return next(
+                errorHandler(
+                    400,
+                    'Username can only contain letters and numbers'
+                )
+            );
+        }
+    }
+
+    if (updateData.phone) {
+        if (updateData.phone.length <= 9 || updateData.phone.length >= 12) {
+            return next(
+                errorHandler(
+                    400,
+                    'Phone must be between 10 and 11 characters!!!'
+                )
+            );
+        }
+
+        if (updateData.phone.includes(' ')) {
+            return next(errorHandler(400, 'Phone can not contains spaces!!!'));
+        }
+    }
+
+    if (updateData.address) {
+        if (
+            updateData.address.length <= 4 ||
+            updateData.address.length >= 500
+        ) {
+            return next(
+                errorHandler(
+                    400,
+                    'Address must be between 4 and 500 characters!!!'
+                )
+            );
+        }
+    }
+
+    // validate thêm
 
     try {
         // Kiểm tra xem user có tồn tại không
@@ -189,7 +244,8 @@ const updateProfile = async (req, res, next) => {
                     name: req.body.name,
                     password: req.body.password,
                     address: req.body.address,
-                    phone: req.body.phone
+                    phone: req.body.phone,
+                    profile_picture: req.body.profile_picture
                 }
             },
             {
@@ -269,6 +325,7 @@ const signOut = async (req, res, next) => {
         return next(error); // Xử lý lỗi qua middleware
     }
 };
+
 export {
     updateUser,
     deleteUser,
