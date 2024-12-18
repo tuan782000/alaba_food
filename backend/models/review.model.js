@@ -18,6 +18,10 @@ const review = new mongoose.Schema(
         },
         image: {
             type: String
+        },
+        is_deleted: {
+            type: Boolean,
+            default: false
         }
     },
     {
