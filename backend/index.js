@@ -12,6 +12,7 @@ import menuItemOptionRouter from './routes/menuItemOption.route.js';
 import orderRouter from './routes/order.route.js';
 import orderDetailRouter from './routes/orderDetail.route.js';
 import reviewRouter from './routes/review.route.js';
+import likeRestaurantRouter from './routes/likeRestaurant.route.js';
 const app = express();
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/menu-item-option', menuItemOptionRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/order-detail', orderDetailRouter);
 app.use('/api/review', reviewRouter);
+app.use('/api/like-restaurant', likeRestaurantRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
